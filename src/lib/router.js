@@ -8,12 +8,6 @@
         this.internal = false;
         this.currentState = null;
 
-        var PARAMETER_REGEXP = /([:])(\w+)/g;
-        var WILDCARD_REGEXP = /\*/g;
-        var REPLACE_VARIABLE_REGEXP = '([^\/]+)';
-        var REPLACE_WILDCARD = '(?:.*)';
-        //var FOLLOWED_BY_SLASH_REGEXP = '(?:\/$|$)';
-
         this.init = function() {
             createEvent();
         }
@@ -89,10 +83,8 @@
           var found = _.chain(self.states)
           .map(function(state) {
             var dynamicParams = replaceDynamicParams(state.name);
-            // console.group('state', state)
-            // console.log(dynamicParams)
-            // console.groupEnd('state', state)
             var match = stateName.match(dynamicParams.regex);
+
             return match ? {
               match: match,
               state: state,
