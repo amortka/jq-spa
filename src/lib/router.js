@@ -8,11 +8,11 @@
         this.internal = false;
         this.currentState = null;
 
-        var PARAMETER_REGEXP = /([:*])(\w+)/g;
+        var PARAMETER_REGEXP = /([:])(\w+)/g;
         var WILDCARD_REGEXP = /\*/g;
         var REPLACE_VARIABLE_REGEXP = '([^\/]+)';
         var REPLACE_WILDCARD = '(?:.*)';
-        var FOLLOWED_BY_SLASH_REGEXP = '(?:\/$|$)';
+        //var FOLLOWED_BY_SLASH_REGEXP = '(?:\/$|$)';
 
         this.init = function() {
             createEvent();
@@ -29,27 +29,25 @@
             var states = this.states;
 
             var route = findRoute(stateName);
-            console.log('route', route);
 
             if (!route) {
-
-                stateName = _.find(this.states, 'default').name;
+                route = {
+                  state: _.find(this.states, 'default')
+                }
             }
 
-            var cb = route.state.cb || (function(stateName) {});
+            var cb = route && route.state.cb || (function(stateName) {});
             if (route.state.templateUrl) {
                 if (this.currentState && route.state.unload) {
                     route.state.unload(stateName, function() {
                         viewElement.load(route.state.templateUrl, function(dom) {
-                            console.log('params', getParams(route));
-                            cb(stateName);
+                            cb(stateName, getParams(route));
                         });
                     });
                 } else {
                     viewElement.load(route.state.templateUrl, function(dom) {
-                        console.log('params', getParams(route));
                         self.currentState = stateName;
-                        cb(stateName);
+                        cb(stateName, getParams(route));
                     })
                 };
             }
@@ -91,7 +89,9 @@
           var found = _.chain(self.states)
           .map(function(state) {
             var dynamicParams = replaceDynamicParams(state.name);
-            console.log('dynamicParams', dynamicParams);
+            // console.group('state', state)
+            // console.log(dynamicParams)
+            // console.groupEnd('state', state)
             var match = stateName.match(dynamicParams.regex);
             return match ? {
               match: match,
@@ -115,29 +115,23 @@
         }
 
         function getParams(route) {
-          console.log('getting params for route', route);
           var params = {}
-          if (route.dynamicParams.length > 0) {
-            params = {
-              foo: 'bar'
-            };
+          if (route.dynamicParams && route.dynamicParams.length > 0) {
+            _.forEach(route.dynamicParams, function(param, idx) {
+              params[param] = route.match[idx + 1];
+            });
           }
-
           return params;
-
         }
 
         function replaceDynamicParams(state) {
-            console.log('state', state);
-
             var params = [];
             var regex = new RegExp(
-                clean(state)
-                .replace(PARAMETER_REGEXP, function(full, dots, name) {
+                '^' + state
+                .replace(/(:)(\w+)/g, function(full, dots, name) {
                     params.push(name);
-                    return REPLACE_VARIABLE_REGEXP;
-                })
-                .replace(WILDCARD_REGEXP, REPLACE_WILDCARD) + FOLLOWED_BY_SLASH_REGEXP
+                    return '([\\w\\d-]+)';
+                }) + '$'
               );
 
             return {

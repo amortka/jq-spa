@@ -30,10 +30,12 @@
                         console.log('test init!');
                       }
                   })
-                  .when('test/:id:/:number', {
+                  .when('test/:id/:name', {
                       templateUrl: 'pages/test.tmpl.html',
-                      cb: function(state) {
-                        console.log('test init!');
+                      cb: function(state, params) {
+                        console.log('test init with params');
+                        console.log('id:', params.id);
+                        console.log('name:', params.name);
                       }
                   })
                   .other('home');
