@@ -5,15 +5,20 @@
     <title>SPA router</title>
     <meta name="keywords" content=""/>
     <meta name="description" content=""/>
+    <!-- build:css({_tmp,src}) app.css -->
+    <link rel="stylesheet" href="app.css">
+    <!-- endbuild -->
 </head>
 <body>
-	<h1>Router</h1>
+	<h1>Router!</h1>
 	<a href="#/home">hello</a>
 	<a href="#/about">about</a>
 	<a href="#/test/123/124">test</a>
 	<button>go</button>
 
   <main></main>
+
+  <!-- build:js app.min.js -->
 
 	<script src="lib/jquery-3.1.1.min.js"></script>
 	<script src="lib/lodash-4.17.4.min.js"></script>
@@ -23,5 +28,7 @@
 	<script src="pages/about.js"></script>
 
 	<script src="app.js"></script>
+
+  <!-- endbuild -->
 </body>
 </html>

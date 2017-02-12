@@ -1,2 +1,5 @@
+_tmp
+.tmp
+.idea
 dist/
 node_modules
